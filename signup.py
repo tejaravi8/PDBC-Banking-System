@@ -53,7 +53,7 @@ def signup():
     data=cursor.fetchone()
     user_id,username,password,user_role=data
     
-    print( f'\n hello {username}, enter details to proceed: ')
+    print( f'\nhello {username}, enter details to proceed: ')
     
     acc_type=input("enter your account type ( SAVINGS / CURRENT ): ").strip().upper()
     acc_bal=int(input('enter your deposit amount (5000): '))

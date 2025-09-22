@@ -16,3 +16,6 @@ if option==2:
     from login import login
     
     login()
+
+if option==3:
+    print('Thanks for visiting mybank')
