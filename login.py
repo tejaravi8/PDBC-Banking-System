@@ -113,15 +113,19 @@ def login():
         print("\n----------- Admin menu -----------\n")
         print('\n1.Delete customer')
         print('2.Search Customer')
-        print('3.xxxxxxxxxxx')
+        print('3.View requests')
+        print('4.Manage requests')
         option=int(input('\nenter you option (1/2/3/4): '))
         
+        # delete customer
         if option==1:
             cursor.execute('select * from users inner join accounts using(user_id)')
             a=cursor.fetchall()
             print(a)
             
             user_id=int(input('enter userid: '))
+            cursor.execute('delete from accounts where user_id=%s',(user_id,))
+            cursor.execute('delete from requests where user_id=%s',(user_id,))
             cursor.execute('delete from users where user_id=%s',(user_id,))
             mydb.commit()
             
@@ -133,10 +137,66 @@ def login():
             for i in a:
                 print(i)
             
-            acc_number=int(input('\nenter Account Number : '))
-            cursor.execute('select * from users inner join accounts using(user_id) where user_id=%s',(acc_number,))
+            user_id=int(input('\nenter Account Number : '))
+            cursor.execute('select * from users inner join accounts using(user_id) where user_id=%s',(user_id,))
             a=cursor.fetchone()
             print(f'\n{a}')
         
+        elif option==3:
+            def request():
+                filter=input('enter req_type ( loan/ atm_card/ check_book/ net_banking/ all) : ')
+                if filter=='all':
+                    cursor.execute('select * from users inner join requests using(user_id)')
+                    data=cursor.fetchall()
+                    print(data)
+                else:
+                    cursor.execute('select * from users inner join requests using(user_id) where req_type=%s',(filter,))
+                    data=cursor.fetchall()
+                    for i in data:
+                        print(i)
+            request()
+        elif option==4:
+            # def requests():
+            filter=input('enter req_type ( loan/ atm_card/ check_book/ net_banking/ all) : ')
+            # status=input('enter req_status ( pending , rejected, success ) : ')
+            if filter=='all':
+                status=input('enter req_status ( pending , rejected, success ) : ')
+                cursor.execute('select users.user_id,req_bal,req_status,req_type,req_id from users inner join requests using(user_id)')
+                data=cursor.fetchall()
+                # user_id,req_bal,req_status,req_type,req_id=data
+                for i in data:
+                    user_id,req_bal,req_status,req_type,req_id=i
+                    if req_status==status:
+                        print(i)
+            else:
+                cursor.execute('select users.user_id,req_bal,req_status,req_type,req_id from users inner join requests using(user_id) where req_type=%s',(filter,))
+                data=cursor.fetchall()
+                status=input('enter req_status ( pending , rejected, success ) : ')
+                for i in data:
+                    user_id,req_bal,rstatus,req_type,reqid=i
+                    if rstatus==status:
+                        print(i)
+                
+            req_id=int(input('enter req_id for req_change: '))
+            cursor.execute('select users.user_id,req_bal,req_status,req_type,req_id from users inner join requests using(user_id) where req_id=%s',(req_id,))
+            t=cursor.fetchall()
+            print(t)
+            if req_bal>300000:
+                req_status='reject'
+                cursor.execute('update requests set req_status=%s where req_id=%s',(req_status,req_id) )
+                mydb.commit()
+                # cursor.execute('update accounts where acc_bal=acc_bal+req_bal where user_id',(user_id))
+                print('reject due to exceeds loan amount')
+            elif 0<=req_bal<300000:
+                req_status='success'
+                cursor.execute('update requests set req_status=%s where req_id=%s',(req_status,req_id))
+                cursor.execute('update accounts set acc_bal=acc_bal+%s where user_id=%s',(req_bal,user_id))
+                mydb.commit()
+                print('your request sanctioned successfully..')
+            
+            # data=requests()
+            # for i in data:
+            #     print(i)
+            
         else:
             print('You Choose Wrong Option')
