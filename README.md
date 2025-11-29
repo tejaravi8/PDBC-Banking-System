@@ -52,7 +52,9 @@ Enter your choice:
 - Install Python 3
 - Download the project files
 - Run the script:
-- python bank_management.py
+```
+python bank_management.py
+```
 
 ## 📌 Future Enhancements
 - Add password authentication
