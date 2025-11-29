@@ -44,7 +44,7 @@ Enter your choice:
 ## 🛠️ Technologies Used
 
 - Python 3
-- File handling / dictionary-based storage
+- MySql
 - CLI (Command Line Interface)
 
 ## 🚀 How to Run
